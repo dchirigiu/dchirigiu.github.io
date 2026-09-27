@@ -83,13 +83,13 @@
 
     <section class="page-hero container container-md" aria-labelledby="jarvis-title">
       <h1 id="jarvis-title">JARVIS: Self-Hosted AI Assistant</h1>
-      <p class="page-lede">Privacy-first voice assistant on a Raspberry Pi</p>
+      <p class="page-lede">Privacy-first voice assistant running 24/7 on a Raspberry Pi — local RAG search, sub-second replies, zero cloud dependencies for core features.</p>
       <figure class="video-frame">
         <video controls preload="none" poster="/assets/images/jarvis-poster.webp" width="1280" height="720">
           <source src="/assets/video/jarvis-demo.mp4" type="video/mp4">
-          Your browser doesn't support embedded video. The 60-second demo is available at <a href="/assets/video/jarvis-demo.mp4">/assets/video/jarvis-demo.mp4</a>.
+          Your browser doesn't support embedded video. The 60-second demo is available at <a href="/assets/video/jarvis-demo.mp4">jarvis-demo.mp4</a>.
         </video>
-        <figcaption>60-second demo — tap the poster to play. Video loads only on demand.</figcaption>
+        <figcaption>60-second demo: tap to play. Video loads on demand (network-only, no prefetch).</figcaption>
       </figure>
     </section>
 
@@ -100,11 +100,23 @@
         <p><strong>Solution.</strong> Built a self-hosted assistant running entirely on a Raspberry Pi 4, using local STT/TTS and a private RAG search over personal notes — reachable from a phone PWA or native assist screen.</p>
         <p><strong>Impact.</strong> It runs 24/7 as systemd services, answers voice queries in under a second, and every core feature works without a cloud dependency.</p>
       </div>
-      <div class="metrics-grid" role="list">
-        <div class="metric" role="listitem"><span class="metric-value">24/7</span><span class="metric-label">uptime as systemd services</span></div>
-        <div class="metric" role="listitem"><span class="metric-value">&lt;1s</span><span class="metric-label">voice reply latency (warm)</span></div>
-        <div class="metric" role="listitem"><span class="metric-value">626</span><span class="metric-label">indexed note chunks (RAG)</span></div>
-        <div class="metric" role="listitem"><span class="metric-value">0</span><span class="metric-label">cloud dependencies for core features</span></div>
+      <div class="metrics-grid" role="list" aria-label="Key metrics">
+        <div class="metric" role="listitem">
+          <span class="metric-value">24/7</span>
+          <span class="metric-label">Uptime (systemd services)</span>
+        </div>
+        <div class="metric" role="listitem">
+          <span class="metric-value">&lt;1s</span>
+          <span class="metric-label">Voice reply latency (warm)</span>
+        </div>
+        <div class="metric" role="listitem">
+          <span class="metric-value">626</span>
+          <span class="metric-label">Indexed note chunks (RAG)</span>
+        </div>
+        <div class="metric" role="listitem">
+          <span class="metric-value">0</span>
+          <span class="metric-label">Cloud dependencies (core)</span>
+        </div>
       </div>
     </section>
 

@@ -1030,68 +1030,93 @@ html.intro-play .hero-actions {
 }
 
 /* --------------------------------------------------------------------------
-   10c. Case study & content pages (spec §2.2–2.5)
+   10c. Case study & content pages — refined spacing and video
    -------------------------------------------------------------------------- */
 
 .breadcrumb {
-  padding-top: calc(64px + var(--space-5));
+  padding-top: calc(64px + var(--space-6));
+  margin-bottom: var(--space-4);
 }
 
 .breadcrumb a {
   color: var(--text-secondary);
   text-decoration: none;
-  font-size: var(--text-sm);
+  font-size: var(--text-base);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  border-radius: 8px;
+  transition: 
+    color 200ms ease-out,
+    background-color 200ms ease-out;
 }
 
 .breadcrumb a:hover {
   color: var(--text-primary);
-  text-decoration: underline;
-  text-underline-offset: 4px;
+  background-color: var(--bg-elevated);
 }
 
 .page-hero {
-  padding-block: var(--space-6) 0;
+  padding-block: var(--space-8) 0;
 }
 
 .page-hero h1 {
   font-size: var(--text-4xl);
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
+  line-height: var(--leading-tight);
 }
 
 .page-lede {
-  margin-top: var(--space-3);
+  margin-top: var(--space-5);
   font-size: var(--text-xl);
   color: var(--text-secondary);
-  max-width: 36em;
+  max-width: 40em;
+  line-height: 1.5;
 }
 
 .prose {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-5);
   max-width: 46em;
+}
+
+.prose p {
+  line-height: 1.65;
 }
 
 .prose ul {
   list-style: none;
   padding: 0;
   display: grid;
+  gap: var(--space-3);
+}
+
+.prose ul li {
+  display: flex;
+  align-items: flex-start;
   gap: var(--space-2);
+  line-height: 1.5;
 }
 
 .prose ul li::before {
   content: "•";
-  color: var(--text-meta);
-  margin-inline-end: var(--space-2);
+  color: var(--accent-focus);
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 0.1em;
 }
 
 .prose strong {
   font-weight: 600;
+  color: var(--text-primary);
 }
 
 /* Video player */
 .video-frame {
-  margin: var(--space-6) 0 0;
+  margin-top: var(--space-10);
 }
 
 .video-frame video {
@@ -1101,48 +1126,70 @@ html.intro-play .hero-actions {
   background: var(--bg-subtle);
   border: 1px solid var(--border-subtle);
   border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  transition: box-shadow 300ms ease-out;
+}
+
+.video-frame video:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.16);
 }
 
 .video-frame figcaption {
-  margin-top: var(--space-2);
+  margin-top: var(--space-3);
   font-size: var(--text-sm);
   color: var(--text-meta);
+  text-align: center;
+  font-style: italic;
 }
 
-/* Metrics grid (Impact) */
+/* Metrics grid (Impact section) */
 .metrics-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-4);
-  margin-top: var(--space-6);
+  gap: var(--space-5);
+  margin-top: var(--space-8);
 }
 
 .metric {
   background: var(--bg-elevated);
   border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  padding: var(--space-5);
+  border-radius: 14px;
+  padding: var(--space-6);
   display: grid;
-  gap: var(--space-1);
+  gap: var(--space-2);
   align-content: center;
   text-align: center;
+  min-height: 120px;
+  transition: 
+    border-color 250ms ease-out,
+    transform 250ms ease-out,
+    box-shadow 250ms ease-out;
+}
+
+.metric:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
 .metric-value {
   font-size: var(--text-3xl);
   font-weight: 600;
   line-height: var(--leading-tight);
+  color: var(--accent-primary);
 }
 
 .metric-label {
   font-size: var(--text-sm);
   color: var(--text-secondary);
   line-height: var(--leading-ui);
+  letter-spacing: 0.01em;
 }
 
 @media (min-width: 768px) {
   .metrics-grid {
     grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-6);
   }
 }
 
