@@ -232,9 +232,23 @@
   }
 
   function init() {
+    initIntro();
     initMenu();
     initSlider();
     initReveal();
+  }
+
+  /* ------------------------------------------------------------------
+     Intro sequencer (spec §3.2): the timeline itself is pure CSS
+     (html.intro-play). JS only records that it played.
+     ------------------------------------------------------------------ */
+  function initIntro() {
+    if (!document.documentElement.classList.contains('intro-play')) return;
+    document.querySelector('.hero-title').addEventListener('animationend', function (e) {
+      if (e.animationName === 'hero-rise') {
+        try { sessionStorage.setItem('intro-seen', '1'); } catch (err) {}
+      }
+    });
   }
 
   if (document.readyState === 'loading') {
