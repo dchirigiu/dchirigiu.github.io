@@ -330,6 +330,21 @@
     });
   }
 
+  /* ------------------------------------------------------------------
+     Image loading state (Phase 9): skeleton pulse runs until load
+     ------------------------------------------------------------------ */
+  function initImageSkeletons() {
+    document.querySelectorAll('img[loading="lazy"]').forEach(function (img) {
+      function done() { img.classList.add('loaded'); }
+      if (img.complete && img.naturalWidth > 0) {
+        done();
+      } else {
+        img.addEventListener('load', done, { once: true });
+        img.addEventListener('error', done, { once: true });
+      }
+    });
+  }
+
   function init() {
     initIntro();
     initTheme();
@@ -338,6 +353,7 @@
     initReveal();
     initCopy();
     initBackToTop();
+    initImageSkeletons();
   }
 
   /* ------------------------------------------------------------------

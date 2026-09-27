@@ -275,6 +275,7 @@ code, pre, kbd, samp {
    -------------------------------------------------------------------------- */
 
 .hero {
+  min-height: 100vh;
   min-height: 100svh;
   display: flex;
   flex-direction: column;
@@ -499,6 +500,7 @@ code, pre, kbd, samp {
     top: 0;
     right: 0;
     z-index: 60;
+    height: 100vh;
     height: 100dvh;
     width: min(320px, 85vw);
     flex-direction: column;
@@ -1388,6 +1390,17 @@ html.intro-play .hero-actions {
   .back-to-top {
     display: none; /* spec: mobile behavior */
   }
+}
+
+/* Skeleton loading state for lazy images (Phase 9): animates until
+   script.js marks the image .loaded on load/error */
+@keyframes skeleton-pulse {
+  from { background-color: var(--bg-subtle); }
+  to   { background-color: var(--bg-overlay); }
+}
+
+html.js img[loading="lazy"]:not(.loaded) {
+  animation: skeleton-pulse 1.1s var(--ease-out) infinite alternate;
 }
 
 /* --------------------------------------------------------------------------
