@@ -231,8 +231,44 @@
     items.forEach(function (el) { io.observe(el); });
   }
 
+  /* ------------------------------------------------------------------
+     Theme toggle (spec §1.1, §5.2 Phase 5): light vars already exist
+     in CSS; JS swaps data-theme, persists explicit choice, and follows
+     system changes only while no explicit choice is stored.
+     ------------------------------------------------------------------ */
+  function initTheme() {
+    var btn = document.querySelector('.theme-toggle');
+    var root = document.documentElement;
+    var metaDark = document.querySelector('meta[name="theme-color"][media*="dark"]');
+    var metaLight = document.querySelector('meta[name="theme-color"][media*="light"]');
+
+    function apply(theme) {
+      root.dataset.theme = theme;
+      if (metaDark) metaDark.content = theme === 'dark' ? '#0a0a0c' : '#faf9f7';
+      if (metaLight) metaLight.content = theme === 'dark' ? '#0a0a0c' : '#faf9f7';
+      if (btn) btn.setAttribute('aria-label', theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+    }
+
+    if (btn) {
+      apply(root.dataset.theme);
+      btn.addEventListener('click', function () {
+        var next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+        apply(next);
+        try { localStorage.setItem('theme', next); } catch (err) {}
+      });
+    }
+
+    // Follow the system only while the visitor hasn't chosen explicitly
+    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function (e) {
+      var explicit = null;
+      try { explicit = localStorage.getItem('theme'); } catch (err) {}
+      if (!explicit) apply(e.matches ? 'light' : 'dark');
+    });
+  }
+
   function init() {
     initIntro();
+    initTheme();
     initMenu();
     initSlider();
     initReveal();

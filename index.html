@@ -10,7 +10,17 @@
   <meta name="theme-color" content="#0a0a0c" media="(prefers-color-scheme: dark)">
   <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
   <link rel="stylesheet" href="/styles.css">
-  <script>document.documentElement.classList.add('js');try{if(!sessionStorage.getItem('intro-seen')&&!matchMedia('(prefers-reduced-motion: reduce)').matches)document.documentElement.classList.add('intro-play')}catch(e){}</script>
+  <script>
+  document.documentElement.classList.add('js');
+  try {
+    var t = localStorage.getItem('theme');
+    if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    document.documentElement.dataset.theme = t;
+  } catch (e) { document.documentElement.dataset.theme = 'dark'; }
+  try {
+    if (!sessionStorage.getItem('intro-seen') && !matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('intro-play');
+  } catch (e) {}
+  </script>
   <script defer src="/script.js"></script>
 </head>
 <body>

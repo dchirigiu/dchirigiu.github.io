@@ -454,6 +454,19 @@ code, pre, kbd, samp {
   background: var(--bg-elevated);
 }
 
+/* Sun shows in dark mode (click → light); moon in light mode */
+.theme-toggle .icon-moon {
+  display: none;
+}
+
+[data-theme="light"] .theme-toggle .icon-sun {
+  display: none;
+}
+
+[data-theme="light"] .theme-toggle .icon-moon {
+  display: block;
+}
+
 .menu-toggle {
   display: none;
 }
