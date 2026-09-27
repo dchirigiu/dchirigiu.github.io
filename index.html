@@ -10,6 +10,8 @@
   <meta name="theme-color" content="#0a0a0c" media="(prefers-color-scheme: dark)">
   <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
   <link rel="stylesheet" href="/styles.css">
+  <script>document.documentElement.classList.add('js');</script>
+  <script defer src="/script.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -64,7 +66,7 @@
     <section class="section container container-lg" id="projects" aria-labelledby="projects-title">
       <h2 id="projects-title">Featured Projects</h2>
       <div class="slider-region">
-        <ul class="slider-track" id="slider-track" role="list" aria-roledescription="carousel" aria-label="Featured projects">
+        <ul class="slider-track" id="slider-track" role="list" tabindex="0" aria-label="Featured projects — scroll horizontally or use arrow keys">
           <li class="slider-card" data-index="0">
             <div class="card-media">
               <img src="/assets/images/dft-thumb.webp" alt="DFT signal analysis — frequency-domain plot of clarinet harmonics" width="800" height="450" loading="lazy" decoding="async">

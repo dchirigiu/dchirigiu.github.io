@@ -462,7 +462,7 @@ code, pre, kbd, samp {
 .nav-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 50;
+  z-index: 30; /* below .site-header (40): menu + toggle stay above the backdrop */
   background: rgb(0 0 0 / 0.5);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
@@ -511,13 +511,13 @@ code, pre, kbd, samp {
 }
 
 /* No-JS fallback: hamburger hidden, nav links render inline */
-body:not(.js) .menu-toggle,
-body:not(.js) .nav-backdrop {
+html:not(.js) .menu-toggle,
+html:not(.js) .nav-backdrop {
   display: none;
 }
 
 @media (max-width: 899px) {
-  body:not(.js) .nav-list {
+  html:not(.js) .nav-list {
     position: static;
     transform: none;
     flex-direction: row;
