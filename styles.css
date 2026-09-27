@@ -18,6 +18,9 @@
   --text-primary:   #e8e6e3;
   --text-secondary: #a8a29e;
   --text-tertiary:  #6e6a66;
+  /* Small meta text: needs 4.5:1 on --bg-primary in BOTH themes,
+     so it maps to a AA-safe shade (tertiary fails contrast audits) */
+  --text-meta:      #a8a29e;
 
   /* Accent & interactive */
   --accent-primary: #ffffff;
@@ -102,6 +105,7 @@
   --text-primary:   #1a1a1e;
   --text-secondary: #5a5a5e;
   --text-tertiary:  #8a8a8e;
+  --text-meta:      #5a5a5e;
 
   --accent-primary: #0a0a0c;
   --accent-hover:   #2a2a2e;
@@ -630,14 +634,14 @@ html:not(.js) .nav-backdrop {
   display: grid;
   gap: var(--space-1);
   font-size: var(--text-sm);
-  color: var(--text-tertiary);
+  color: var(--text-meta);
   line-height: var(--leading-ui);
 }
 
 .card-metrics li::before {
   content: "•";
   margin-inline-end: var(--space-2);
-  color: var(--text-tertiary);
+  color: var(--text-meta);
 }
 
 .card-link {
@@ -730,7 +734,7 @@ html:not(.js) .nav-backdrop {
   margin-top: var(--space-2);
   text-align: center;
   font-size: var(--text-xs);
-  color: var(--text-tertiary);
+  color: var(--text-meta);
 }
 
 /* --------------------------------------------------------------------------
@@ -837,13 +841,13 @@ html.js [data-reveal].in-view {
   align-items: center;
   gap: var(--space-4);
   font-size: var(--text-sm);
-  color: var(--text-tertiary);
+  color: var(--text-meta);
 }
 
 .footer-meta .footer-mark {
   width: 32px;
   height: auto;
-  color: var(--text-tertiary);
+  color: var(--text-meta);
   margin-inline-start: auto;
 }
 
@@ -936,7 +940,7 @@ html.intro-play .hero-actions {
 
 .prose ul li::before {
   content: "•";
-  color: var(--text-tertiary);
+  color: var(--text-meta);
   margin-inline-end: var(--space-2);
 }
 
@@ -961,7 +965,7 @@ html.intro-play .hero-actions {
 .video-frame figcaption {
   margin-top: var(--space-2);
   font-size: var(--text-sm);
-  color: var(--text-tertiary);
+  color: var(--text-meta);
 }
 
 /* Metrics grid (Impact) */
@@ -1012,7 +1016,7 @@ html.intro-play .hero-actions {
 
 .feature-list li::before {
   content: "•";
-  color: var(--text-tertiary);
+  color: var(--text-meta);
   margin-inline-end: var(--space-2);
 }
 
@@ -1035,7 +1039,7 @@ html.intro-play .hero-actions {
 .research-figure figcaption {
   margin-top: var(--space-2);
   font-size: var(--text-sm);
-  color: var(--text-tertiary);
+  color: var(--text-meta);
 }
 
 @media (min-width: 768px) {
@@ -1128,7 +1132,7 @@ html.intro-play .hero-actions {
 
 .perf-label {
   font-size: var(--text-sm);
-  color: var(--text-tertiary);
+  color: var(--text-meta);
 }
 
 .perf-bar {
@@ -1153,7 +1157,7 @@ html.intro-play .hero-actions {
 .perf-note {
   margin-top: var(--space-4);
   font-size: var(--text-xs);
-  color: var(--text-tertiary);
+  color: var(--text-meta);
 }
 
 .next-project {
@@ -1237,7 +1241,7 @@ html.intro-play .hero-actions {
 
 .about-columns li::before {
   content: "•";
-  color: var(--text-tertiary);
+  color: var(--text-meta);
   margin-inline-end: var(--space-2);
 }
 
@@ -1312,7 +1316,7 @@ html.intro-play .hero-actions {
 .response-note {
   margin-top: var(--space-6);
   font-size: var(--text-sm);
-  color: var(--text-tertiary);
+  color: var(--text-meta);
 }
 
 /* Toast (copy confirmation) */
