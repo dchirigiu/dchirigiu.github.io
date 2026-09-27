@@ -7,10 +7,6 @@
 
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-  function scrollOpts(behavior) {
-    return { behavior: reduceMotion.matches ? 'auto' : (behavior || 'smooth') };
-  }
-
   /* ------------------------------------------------------------------
      Mobile menu (spec §2.6): slide-in overlay, Escape/backdrop close
      ------------------------------------------------------------------ */
@@ -266,12 +262,82 @@
     });
   }
 
+  /* ------------------------------------------------------------------
+     Copy to clipboard (contact page, arch diagram) with toast status
+     ------------------------------------------------------------------ */
+  function initCopy() {
+    var toast = document.querySelector('.toast');
+    var toastTimer = null;
+
+    function showToast(message, kind) {
+      if (!toast) return;
+      toast.hidden = false;
+      toast.textContent = message;
+      toast.classList.remove('success', 'error');
+      if (kind) toast.classList.add(kind);
+      toast.classList.add('visible');
+      clearTimeout(toastTimer);
+      toastTimer = window.setTimeout(function () {
+        toast.classList.remove('visible');
+      }, 2000);
+    }
+
+    function copyText(text, okMessage) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () {
+          showToast(okMessage, 'success');
+        }, function () {
+          showToast('Copy failed — please copy manually.', 'error');
+        });
+      } else {
+        showToast('Copy not supported in this browser.', 'error');
+      }
+    }
+
+    document.querySelectorAll('[data-copy-email]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        copyText(btn.getAttribute('data-copy-email'), 'Email copied!');
+      });
+    });
+
+    document.querySelectorAll('[data-copy-target]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var el = document.querySelector(btn.getAttribute('data-copy-target'));
+        if (el) copyText(el.textContent, 'Copied!');
+      });
+    });
+  }
+
+  /* ------------------------------------------------------------------
+     Back to top (spec §2.2: visible after 2 viewports on jarvis page)
+     ------------------------------------------------------------------ */
+  function initBackToTop() {
+    var btn = document.querySelector('.back-to-top');
+    if (!btn) return;
+
+    var ticking = false;
+    window.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(function () {
+        ticking = false;
+        btn.classList.toggle('visible', window.scrollY > window.innerHeight * 2);
+      });
+    }, { passive: true });
+
+    btn.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: reduceMotion.matches ? 'auto' : 'smooth' });
+    });
+  }
+
   function init() {
     initIntro();
     initTheme();
     initMenu();
     initSlider();
     initReveal();
+    initCopy();
+    initBackToTop();
   }
 
   /* ------------------------------------------------------------------
@@ -280,7 +346,9 @@
      ------------------------------------------------------------------ */
   function initIntro() {
     if (!document.documentElement.classList.contains('intro-play')) return;
-    document.querySelector('.hero-title').addEventListener('animationend', function (e) {
+    var title = document.querySelector('.hero-title');
+    if (!title) return;
+    title.addEventListener('animationend', function (e) {
       if (e.animationName === 'hero-rise') {
         try { sessionStorage.setItem('intro-seen', '1'); } catch (err) {}
       }

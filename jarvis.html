@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>JARVIS: Self-Hosted AI Assistant — Daniel Chirigiu</title>
+  <meta name="description" content="Privacy-first voice assistant running 24/7 on a Raspberry Pi: local RAG search, sub-second TTS replies, zero cloud dependencies for core features.">
+  <link rel="canonical" href="https://danielchirigiu.dev/jarvis.html">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#0a0a0c" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
+  <link rel="stylesheet" href="/styles.css">
+  <script>
+  document.documentElement.classList.add('js');
+  try {
+    var t = localStorage.getItem('theme');
+    if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    document.documentElement.dataset.theme = t;
+  } catch (e) { document.documentElement.dataset.theme = 'dark'; }
+  try {
+    if (!sessionStorage.getItem('intro-seen') && !matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('intro-play');
+  } catch (e) {}
+  </script>
+  <script defer src="/script.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="/" aria-label="Daniel Chirigiu — home">DC</a>
+      <nav class="site-nav" aria-label="Primary">
+        <ul class="nav-list" id="nav-list" role="list">
+          <li><a href="/" >Home</a></li>
+          <li><a href="/#projects" aria-current="page">Projects</a></li>
+          <li><a href="/research.html" >Research</a></li>
+          <li><a href="/about.html" >About</a></li>
+          <li><a href="/contact.html" >Contact</a></li>
+        </ul>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-btn theme-toggle" type="button" aria-label="Toggle color theme">
+          <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>
+          </svg>
+          <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/>
+          </svg>
+        </button>
+        <button class="icon-btn menu-toggle" type="button" aria-expanded="false" aria-controls="nav-list" aria-label="Open menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <path d="M4 7h16M4 12h16M4 17h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div class="nav-backdrop" hidden></div>
+
+  <main id="main">
+
+    <nav class="breadcrumb container" aria-label="Breadcrumb">
+      <a href="/#projects">← Back to Projects</a>
+    </nav>
+
+    <section class="page-hero container container-md" aria-labelledby="jarvis-title">
+      <h1 id="jarvis-title">JARVIS: Self-Hosted AI Assistant</h1>
+      <p class="page-lede">Privacy-first voice assistant on a Raspberry Pi</p>
+      <figure class="video-frame">
+        <video controls preload="none" poster="/assets/images/jarvis-poster.webp" width="1280" height="720">
+          <source src="/assets/video/jarvis-demo.mp4" type="video/mp4">
+          Your browser doesn't support embedded video. The 60-second demo is available at <a href="/assets/video/jarvis-demo.mp4">/assets/video/jarvis-demo.mp4</a>.
+        </video>
+        <figcaption>60-second demo — tap the poster to play. Video loads only on demand.</figcaption>
+      </figure>
+    </section>
+
+    <section class="section container container-md" aria-labelledby="overview-title">
+      <h2 id="overview-title">Overview</h2>
+      <div class="prose">
+        <p><strong>Problem.</strong> Voice assistants require cloud APIs, sacrificing privacy and creating vendor lock-in. Your voice, your notes, and your habits end up on someone else's servers.</p>
+        <p><strong>Solution.</strong> Built a self-hosted assistant running entirely on a Raspberry Pi 4, using local STT/TTS and a private RAG search over personal notes — reachable from a phone PWA or native assist screen.</p>
+        <p><strong>Impact.</strong> It runs 24/7 as systemd services, answers voice queries in under a second, and every core feature works without a cloud dependency.</p>
+      </div>
+      <div class="metrics-grid" role="list">
+        <div class="metric" role="listitem"><span class="metric-value">24/7</span><span class="metric-label">uptime as systemd services</span></div>
+        <div class="metric" role="listitem"><span class="metric-value">&lt;1s</span><span class="metric-label">voice reply latency (warm)</span></div>
+        <div class="metric" role="listitem"><span class="metric-value">626</span><span class="metric-label">indexed note chunks (RAG)</span></div>
+        <div class="metric" role="listitem"><span class="metric-value">0</span><span class="metric-label">cloud dependencies for core features</span></div>
+      </div>
+    </section>
+
+    <section class="section container container-md" aria-labelledby="features-title">
+      <h2 id="features-title">Key Features</h2>
+      <ul class="feature-list" role="list">
+        <li>Voice I/O — Groq STT with local fallback, Piper TTS</li>
+        <li>Local RAG search over a 626-chunk personal note index</li>
+        <li>24/7 systemd services with file-based health logging</li>
+        <li>Web Push notifications (VAPID) to the phone PWA</li>
+      </ul>
+      <div class="screenshot-grid">
+        <figure>
+          <img src="/assets/images/jarvis-screenshot-1.webp" alt="JARVIS PWA chat interface showing a conversation thread" width="1440" height="900" loading="lazy" decoding="async">
+          <figcaption>PWA chat interface</figcaption>
+        </figure>
+        <figure>
+          <img src="/assets/images/jarvis-screenshot-2.webp" alt="RAG search result quoting a personal note" width="1440" height="900" loading="lazy" decoding="async">
+          <figcaption>RAG search over personal notes</figcaption>
+        </figure>
+        <figure>
+          <img src="/assets/images/jarvis-screenshot-3.webp" alt="Android assist screen with voice reply" width="1440" height="900" loading="lazy" decoding="async">
+          <figcaption>Native assist screen</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section container container-md" aria-labelledby="arch-title">
+      <h2 id="arch-title">Technical Architecture</h2>
+      <div class="arch-wrap">
+        <pre class="arch" aria-label="Architecture diagram: phone PWA connects to Raspberry Pi running Python with SQLite, RAG and TTS/STT, which talks to the Hermes API and a Signal gateway"><code>┌─────────┐     ┌──────────────┐     ┌─────────┐
+│  Phone  │────▶│ Pi (Python)  │────▶│ Hermes  │
+│ PWA/TWA │◀────│ + SQLite     │◀────│   API   │
+└─────────┘     │ + RAG        │     └─────────┘
+                │ + TTS/STT    │
+                └──────────────┘
+                       │
+                       ▼
+                ┌──────────────┐
+                │   Signal     │
+                │   Gateway    │
+                └──────────────┘</code></pre>
+        <button class="btn btn-ghost copy-btn" type="button" data-copy-target=".arch code">Copy</button>
+      </div>
+      <div class="stack-grid">
+        <div>
+          <h3>Backend</h3>
+          <ul role="list"><li>Python 3.11</li><li>SQLite</li><li>systemd</li><li>Piper TTS</li><li>faster-whisper</li></ul>
+        </div>
+        <div>
+          <h3>Frontend</h3>
+          <ul role="list"><li>Vanilla JS (ES6+)</li><li>Service Worker (PWA)</li><li>Web Push API</li><li>MediaRecorder API</li></ul>
+        </div>
+        <div>
+          <h3>Infrastructure</h3>
+          <ul role="list"><li>Raspberry Pi 4</li><li>Tailscale HTTPS</li><li>GitHub Pages</li></ul>
+        </div>
+        <div>
+          <h3>Integrations</h3>
+          <ul role="list"><li>Groq (STT fallback)</li><li>Signal (via signal-cli)</li><li>Hermes Agent API</li></ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section container container-md" aria-labelledby="perf-title">
+      <h2 id="perf-title">Performance Wins</h2>
+      <div class="perf-bars">
+        <div class="perf-metric">
+          <h3>TTS reply latency</h3>
+          <div class="perf-row"><span class="perf-label">Before</span><span class="perf-bar perf-before" style="--w: 100%"></span><span class="perf-value">7.0s</span></div>
+          <div class="perf-row"><span class="perf-label">After</span><span class="perf-bar perf-after" style="--w: 14.3%"></span><span class="perf-value">1.0s</span></div>
+        </div>
+        <div class="perf-metric">
+          <h3>Watcher to final row</h3>
+          <div class="perf-row"><span class="perf-label">Before</span><span class="perf-bar perf-before" style="--w: 100%"></span><span class="perf-value">2.0s</span></div>
+          <div class="perf-row"><span class="perf-label">After</span><span class="perf-bar perf-after" style="--w: 13%"></span><span class="perf-value">0.26s</span></div>
+        </div>
+        <div class="perf-metric">
+          <h3>RAG search</h3>
+          <div class="perf-row"><span class="perf-label">Warm</span><span class="perf-bar perf-after" style="--w: 11%"></span><span class="perf-value">0.4s</span></div>
+          <div class="perf-row"><span class="perf-label">Cold</span><span class="perf-bar perf-before" style="--w: 100%"></span><span class="perf-value">3.7s</span></div>
+        </div>
+      </div>
+      <p class="perf-note">Bars share a per-metric scale: each "before" bar is full width, "after" is proportional.</p>
+    </section>
+
+    <section class="section container container-md" aria-labelledby="lessons-title">
+      <h2 id="lessons-title">Lessons Learned</h2>
+      <div class="prose">
+        <ul role="list">
+          <li>The Pi's journal is unreliable — all monitoring moved to file logs after silent service failures.</li>
+          <li>Piper claims stdout support but only writes files; the TTS worker uses temp .wav files with cleanup.</li>
+          <li>Cache keys must use the <em>spoken</em> text, not display text, or "13:15" and "one fifteen p.m." synthesize twice.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section container container-md" aria-labelledby="challenges-title">
+      <h2 id="challenges-title">Open Challenges</h2>
+      <div class="prose">
+        <ul role="list">
+          <li>STT accuracy degrades in noisy rooms — a local wake-word model could gate listening and cut false triggers.</li>
+          <li>RAG recall drops as the note index grows; chunking strategy needs tuning beyond 626 chunks.</li>
+          <li>Remote access depends on Tailscale; a self-hosted relay would remove the last external dependency.</li>
+        </ul>
+      </div>
+      <div class="next-project">
+        <a class="btn btn-ghost" href="/research.html">Next: Research Projects <span aria-hidden="true">→</span></a>
+      </div>
+    </section>
+
+    <div class="toast" role="status" aria-live="polite" hidden></div>
+    <button class="back-to-top" type="button" aria-label="Back to top" hidden>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5m-7 7 7-7 7 7"/></svg>
+    </button>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <h2 class="footer-cta">Let's Build Together</h2>
+      <div class="footer-social">
+        <a href="mailto:DanielChirigiu@gmail.com">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+          Email
+        </a>
+        <a href="https://github.com/danielchirigiu" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.54-3.87-1.54-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.38-5.25 5.66.41.36.78 1.06.78 2.14v3.17c0 .31.2.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg>
+          GitHub
+        </a>
+        <a href="https://www.linkedin.com/in/daniel-chirigiu" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05a3.74 3.74 0 0 1 3.37-1.85c3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.55V9h3.57v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.72v20.55C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.72C24 .77 23.2 0 22.22 0Z"/></svg>
+          LinkedIn
+        </a>
+      </div>
+      <div class="footer-meta">
+        <span>© 2027 Daniel Chirigiu · Built with care, no frameworks</span>
+        <svg class="footer-mark" viewBox="0 0 64 40" fill="none" aria-hidden="true" focusable="false">
+          <path d="M5 5.5 26 20 5 34.5Z" fill="currentColor" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+          <path d="M59 5.5 38 20 59 34.5Z" fill="currentColor" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

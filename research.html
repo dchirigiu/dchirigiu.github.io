@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Research — Daniel Chirigiu</title>
+  <meta name="description" content="CNN music genre classification (79% accuracy from scratch) and DFT signal analysis of clarinet harmonics across 177k data points.">
+  <link rel="canonical" href="https://danielchirigiu.dev/research.html">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#0a0a0c" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)">
+  <link rel="stylesheet" href="/styles.css">
+  <script>
+  document.documentElement.classList.add('js');
+  try {
+    var t = localStorage.getItem('theme');
+    if (t !== 'light' && t !== 'dark') t = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    document.documentElement.dataset.theme = t;
+  } catch (e) { document.documentElement.dataset.theme = 'dark'; }
+  try {
+    if (!sessionStorage.getItem('intro-seen') && !matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('intro-play');
+  } catch (e) {}
+  </script>
+  <script defer src="/script.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="/" aria-label="Daniel Chirigiu — home">DC</a>
+      <nav class="site-nav" aria-label="Primary">
+        <ul class="nav-list" id="nav-list" role="list">
+          <li><a href="/" >Home</a></li>
+          <li><a href="/#projects" >Projects</a></li>
+          <li><a href="/research.html" aria-current="page">Research</a></li>
+          <li><a href="/about.html" >About</a></li>
+          <li><a href="/contact.html" >Contact</a></li>
+        </ul>
+      </nav>
+      <div class="header-actions">
+        <button class="icon-btn theme-toggle" type="button" aria-label="Toggle color theme">
+          <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4"/>
+            <path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>
+          </svg>
+          <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"/>
+          </svg>
+        </button>
+        <button class="icon-btn menu-toggle" type="button" aria-expanded="false" aria-controls="nav-list" aria-label="Open menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <path d="M4 7h16M4 12h16M4 17h16"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <div class="nav-backdrop" hidden></div>
+
+  <main id="main">
+
+    <nav class="breadcrumb container" aria-label="Breadcrumb">
+      <a href="/">← Back</a>
+    </nav>
+
+    <section class="page-hero container container-md" aria-labelledby="research-title">
+      <h1 id="research-title">Research Projects</h1>
+      <p class="page-lede">Machine learning and signal processing — one-page summaries, full papers linked.</p>
+    </section>
+
+    <article class="section container container-md research-item" id="cnn" aria-labelledby="cnn-title">
+      <h2 id="cnn-title">CNN Music Genre Classification</h2>
+      <p class="research-impact">79% accuracy from a from-scratch neural network</p>
+      <div class="prose">
+        <p><strong>Problem.</strong> Classify music genres from audio without off-the-shelf models — derive the mathematical foundations of convolutional networks and implement them from first principles.</p>
+        <p><strong>Approach.</strong></p>
+        <ul role="list">
+          <li>Derived the convolution, pooling and backpropagation mathematics by hand before writing code.</li>
+          <li>Implemented the network and training loop in Python, no ML frameworks.</li>
+          <li>Evaluated against a held-out set with per-class error analysis.</li>
+        </ul>
+        <p><strong>Results.</strong> 79% classification accuracy. Recognized on "Ivanov's Top Papers of the Decade", and the work led directly to a programming assistant job offer.</p>
+      </div>
+      <figure class="research-figure">
+        <img src="/assets/images/cnn-figure.webp" alt="Confusion matrix from the CNN music genre classifier" width="1200" height="900" loading="lazy" decoding="async">
+        <figcaption>Confusion matrix — most confusion between acoustically adjacent genres.</figcaption>
+      </figure>
+      <div class="research-links">
+        <a class="card-link" href="https://github.com/danielchirigiu" rel="noopener noreferrer">GitHub <span aria-hidden="true">→</span></a>
+        <a class="card-link" href="/assets/papers/cnn-paper.pdf">Paper PDF <span aria-hidden="true">→</span></a>
+      </div>
+    </article>
+
+    <article class="section container container-md research-item" id="dft" aria-labelledby="dft-title">
+      <h2 id="dft-title">DFT Signal Analysis</h2>
+      <p class="research-impact">177k data points, clarinet harmonics</p>
+      <div class="prose">
+        <p><strong>Problem.</strong> Characterize the timbre of a clarinet by decomposing its signal into frequency components using the Discrete Fourier Transform.</p>
+        <p><strong>Approach.</strong></p>
+        <ul role="list">
+          <li>Derived the DFT and its relationship to harmonic series from the mathematical definition.</li>
+          <li>Processed 177k sampled data points of clarinet recordings in Python.</li>
+          <li>Decomposed the spectrum into fundamental + harmonics and compared amplitude envelopes.</li>
+        </ul>
+        <p><strong>Results.</strong> Clean harmonic decomposition across 177k data points; the analysis was recognized among the top course papers.</p>
+      </div>
+      <figure class="research-figure">
+        <img src="/assets/images/dft-figure.webp" alt="Frequency-domain plot of clarinet harmonics from DFT analysis" width="1200" height="900" loading="lazy" decoding="async">
+        <figcaption>Frequency-domain plot — harmonic peaks of the clarinet signal.</figcaption>
+      </figure>
+      <div class="research-links">
+        <a class="card-link" href="https://github.com/danielchirigiu" rel="noopener noreferrer">GitHub <span aria-hidden="true">→</span></a>
+        <a class="card-link" href="/assets/papers/dft-paper.pdf">Paper PDF <span aria-hidden="true">→</span></a>
+      </div>
+    </article>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <h2 class="footer-cta">Let's Build Together</h2>
+      <div class="footer-social">
+        <a href="mailto:DanielChirigiu@gmail.com">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+          Email
+        </a>
+        <a href="https://github.com/danielchirigiu" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.54-3.87-1.54-.53-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.23-1.28-5.23-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.38-5.25 5.66.41.36.78 1.06.78 2.14v3.17c0 .31.2.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg>
+          GitHub
+        </a>
+        <a href="https://www.linkedin.com/in/daniel-chirigiu" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.55v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05a3.74 3.74 0 0 1 3.37-1.85c3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13ZM7.12 20.45H3.55V9h3.57v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.72v20.55C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.72C24 .77 23.2 0 22.22 0Z"/></svg>
+          LinkedIn
+        </a>
+      </div>
+      <div class="footer-meta">
+        <span>© 2027 Daniel Chirigiu · Built with care, no frameworks</span>
+        <svg class="footer-mark" viewBox="0 0 64 40" fill="none" aria-hidden="true" focusable="false">
+          <path d="M5 5.5 26 20 5 34.5Z" fill="currentColor" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+          <path d="M59 5.5 38 20 59 34.5Z" fill="currentColor" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
