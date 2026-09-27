@@ -371,7 +371,471 @@ code, pre, kbd, samp {
 }
 
 /* --------------------------------------------------------------------------
-   7. Global reduced motion (spec: full support)
+   7. Header & navigation
+   -------------------------------------------------------------------------- */
+
+.site-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  background: color-mix(in srgb, var(--bg-primary) 82%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.header-inner {
+  max-width: var(--container-xl);
+  margin-inline: auto;
+  padding-inline: var(--padding-page);
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.brand {
+  font-weight: 700;
+  font-size: var(--text-lg);
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  color: var(--text-primary);
+}
+
+.nav-list {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  font-size: var(--text-sm);
+  line-height: var(--leading-ui);
+}
+
+.nav-list a {
+  text-decoration: none;
+  color: var(--text-secondary);
+  padding-block: var(--space-2);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.nav-list a:hover {
+  color: var(--text-primary);
+}
+
+.nav-list a[aria-current="page"] {
+  color: var(--accent-focus);
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 2px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  color: var(--text-secondary);
+  transition: color var(--dur-fast) var(--ease-out),
+              background-color var(--dur-fast) var(--ease-out);
+}
+
+.icon-btn:hover {
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+}
+
+.menu-toggle {
+  display: none;
+}
+
+/* Mobile: nav list becomes a slide-in overlay (spec §2.6) */
+.nav-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  background: rgb(0 0 0 / 0.5);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--dur-base) var(--ease-out),
+              visibility var(--dur-base);
+}
+
+@media (max-width: 899px) {
+  .menu-toggle {
+    display: inline-flex;
+  }
+
+  .nav-list {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 60;
+    height: 100dvh;
+    width: min(320px, 85vw);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-5);
+    padding: var(--space-12) var(--space-6) var(--space-6);
+    background: var(--bg-overlay);
+    border-left: 1px solid var(--border-subtle);
+    box-shadow: var(--shadow-card);
+    transform: translateX(105%);
+    transition: transform var(--dur-base) var(--ease-out);
+    font-size: var(--text-xl);
+  }
+
+  .nav-list a {
+    color: var(--text-primary);
+  }
+
+  body.menu-open .nav-list {
+    transform: none;
+  }
+
+  body.menu-open .nav-backdrop {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+/* No-JS fallback: hamburger hidden, nav links render inline */
+body:not(.js) .menu-toggle,
+body:not(.js) .nav-backdrop {
+  display: none;
+}
+
+@media (max-width: 899px) {
+  body:not(.js) .nav-list {
+    position: static;
+    transform: none;
+    flex-direction: row;
+    flex-wrap: wrap;
+    height: auto;
+    width: auto;
+    padding: 0;
+    background: none;
+    border: 0;
+    box-shadow: none;
+    font-size: var(--text-sm);
+    gap: var(--space-4);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   8. Projects slider (structure now; interaction JS in Phase 3)
+   -------------------------------------------------------------------------- */
+
+.slider-region {
+  position: relative;
+}
+
+.slider-track {
+  display: flex;
+  gap: var(--space-5);
+  list-style: none;
+  padding: var(--space-2) var(--padding-page) var(--space-6);
+  margin-inline: calc(var(--padding-page) * -1);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.slider-track::-webkit-scrollbar {
+  display: none;
+}
+
+.slider-card {
+  flex: 0 0 86%;
+  scroll-snap-align: center;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 16px;
+  overflow: hidden;
+  opacity: 0.6;
+  transition: opacity var(--dur-base) var(--ease-out),
+              transform var(--dur-base) var(--ease-out),
+              border-color var(--dur-base) var(--ease-out);
+}
+
+.slider-card.centered {
+  opacity: 1;
+  border-color: var(--border-strong);
+}
+
+@media (min-width: 1024px) {
+  .slider-card {
+    flex-basis: 38%;
+  }
+
+  .slider-card.centered {
+    transform: scale(1.05);
+  }
+}
+
+.card-media img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: var(--bg-subtle);
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  flex: 1;
+}
+
+.card-title {
+  font-size: var(--text-2xl);
+}
+
+.card-desc {
+  color: var(--text-secondary);
+}
+
+.card-metrics {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+  line-height: var(--leading-ui);
+}
+
+.card-metrics li::before {
+  content: "•";
+  margin-inline-end: var(--space-2);
+  color: var(--text-tertiary);
+}
+
+.card-link {
+  margin-top: auto;
+  padding-top: var(--space-2);
+  color: var(--accent-focus);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.card-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.slider-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  margin-top: var(--space-2);
+}
+
+.slider-arrow {
+  display: none;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--border-strong);
+  border-radius: 50%;
+  color: var(--text-secondary);
+  align-items: center;
+  justify-content: center;
+  transition: color var(--dur-fast) var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out),
+              background-color var(--dur-fast) var(--ease-out);
+}
+
+.slider-arrow:hover {
+  color: var(--text-primary);
+  border-color: var(--text-tertiary);
+  background: var(--bg-elevated);
+}
+
+@media (min-width: 768px) {
+  .slider-arrow {
+    display: inline-flex;
+  }
+}
+
+.slider-dots {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-4);
+  padding: 0;
+}
+
+.slider-dot {
+  width: 44px;
+  height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.slider-dot::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--border-strong);
+  transition: background-color var(--dur-fast) var(--ease-out),
+              transform var(--dur-fast) var(--ease-out);
+}
+
+.slider-dot[aria-current="true"]::before {
+  background: var(--accent-primary);
+  transform: scale(1.25);
+}
+
+@media (min-width: 768px) {
+  .slider-dots,
+  .slider-hint {
+    display: none;
+  }
+}
+
+.slider-hint {
+  margin-top: var(--space-2);
+  text-align: center;
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+}
+
+/* --------------------------------------------------------------------------
+   9. Quick stats
+   -------------------------------------------------------------------------- */
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+}
+
+.stat {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: var(--space-5);
+  text-align: center;
+  display: grid;
+  gap: var(--space-1);
+  align-content: center;
+}
+
+.stat-value {
+  font-size: var(--text-3xl);
+  font-weight: 600;
+  line-height: var(--leading-tight);
+}
+
+.stat-label {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  line-height: var(--leading-ui);
+}
+
+@media (min-width: 768px) {
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .stats-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+/* Scroll reveal — hidden state only when JS is present */
+html.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity var(--dur-slow) var(--ease-out),
+              transform var(--dur-slow) var(--ease-out);
+}
+
+html.js [data-reveal].in-view {
+  opacity: 1;
+  transform: none;
+}
+
+/* --------------------------------------------------------------------------
+   10. Footer
+   -------------------------------------------------------------------------- */
+
+.site-footer {
+  border-top: 1px solid var(--border-subtle);
+  padding-block: var(--space-10);
+}
+
+.footer-cta {
+  font-size: var(--text-2xl);
+  margin-bottom: var(--space-5);
+}
+
+.footer-social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+  margin-bottom: var(--space-8);
+}
+
+.footer-social a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.footer-social a:hover {
+  color: var(--accent-focus);
+}
+
+.footer-social svg {
+  width: 24px;
+  height: 24px;
+}
+
+.footer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+}
+
+.footer-meta .footer-mark {
+  width: 32px;
+  height: auto;
+  color: var(--text-tertiary);
+  margin-inline-start: auto;
+}
+
+/* --------------------------------------------------------------------------
+   11. Global reduced motion (spec: full support)
    -------------------------------------------------------------------------- */
 
 @media (prefers-reduced-motion: reduce) {
