@@ -824,41 +824,56 @@ html:not(.js) .nav-backdrop {
 
 
 /* --------------------------------------------------------------------------
-   9. Quick stats
+   9. Quick stats — refined grid and reveal
    -------------------------------------------------------------------------- */
 
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-4);
+  gap: var(--space-5);
+  margin-top: var(--space-8);
 }
 
 .stat {
   background: var(--bg-elevated);
   border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  padding: var(--space-5);
+  border-radius: 14px;
+  padding: var(--space-6);
   text-align: center;
   display: grid;
-  gap: var(--space-1);
+  gap: var(--space-2);
   align-content: center;
+  min-height: 120px;
+  transition: 
+    border-color 250ms ease-out,
+    transform 250ms ease-out,
+    box-shadow 250ms ease-out;
+}
+
+.stat:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
 .stat-value {
   font-size: var(--text-3xl);
   font-weight: 600;
   line-height: var(--leading-tight);
+  color: var(--accent-primary);
 }
 
 .stat-label {
   font-size: var(--text-sm);
   color: var(--text-secondary);
   line-height: var(--leading-ui);
+  letter-spacing: 0.01em;
 }
 
 @media (min-width: 768px) {
   .stats-grid {
     grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-6);
   }
 }
 
@@ -868,12 +883,13 @@ html:not(.js) .nav-backdrop {
   }
 }
 
-/* Scroll reveal — hidden state only when JS is present */
+/* Scroll reveal with stagger — hidden state only when JS is present */
 html.js [data-reveal] {
   opacity: 0;
-  transform: translateY(16px);
-  transition: opacity var(--dur-slow) var(--ease-out),
-              transform var(--dur-slow) var(--ease-out);
+  transform: translateY(24px);
+  transition: 
+    opacity 600ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 html.js [data-reveal].in-view {
@@ -881,25 +897,30 @@ html.js [data-reveal].in-view {
   transform: none;
 }
 
+/* Stagger delay applied via JS (100ms per item) */
+
 /* --------------------------------------------------------------------------
-   10. Footer
+   10. Footer — refined spacing and social links
    -------------------------------------------------------------------------- */
 
 .site-footer {
   border-top: 1px solid var(--border-subtle);
-  padding-block: var(--space-10);
+  padding-block: var(--space-12);
+  margin-top: var(--space-16);
 }
 
 .footer-cta {
-  font-size: var(--text-2xl);
-  margin-bottom: var(--space-5);
+  font-size: var(--text-3xl);
+  font-weight: 600;
+  margin-bottom: var(--space-6);
+  letter-spacing: -0.02em;
 }
 
 .footer-social {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-5);
-  margin-bottom: var(--space-8);
+  gap: var(--space-6);
+  margin-bottom: var(--space-10);
 }
 
 .footer-social a {
@@ -908,32 +929,44 @@ html.js [data-reveal].in-view {
   gap: var(--space-2);
   color: var(--text-secondary);
   text-decoration: none;
-  font-size: var(--text-sm);
-  transition: color var(--dur-fast) var(--ease-out);
+  font-size: var(--text-base);
+  font-weight: 500;
+  padding: var(--space-2) var(--space-3);
+  border-radius: 8px;
+  transition: 
+    color 200ms ease-out,
+    background-color 200ms ease-out,
+    transform 200ms ease-out;
 }
 
 .footer-social a:hover {
   color: var(--accent-focus);
+  background-color: var(--bg-elevated);
+  transform: translateY(-1px);
 }
 
 .footer-social svg {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
 }
 
 .footer-meta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--space-5);
   font-size: var(--text-sm);
   color: var(--text-meta);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--border-subtle);
 }
 
 .footer-meta .footer-mark {
-  width: 32px;
+  width: 28px;
   height: auto;
   color: var(--text-meta);
+  opacity: 0.6;
   margin-inline-start: auto;
 }
 

@@ -204,7 +204,7 @@
   }
 
   /* ------------------------------------------------------------------
-     Scroll reveal (spec §2.1 Quick Stats): fade-up, 100ms stagger
+     Scroll reveal (spec §2.1 Quick Stats): fade-up with stagger
      ------------------------------------------------------------------ */
   function initReveal() {
     var items = Array.prototype.slice.call(document.querySelectorAll('[data-reveal]'));
@@ -222,11 +222,12 @@
         var group = el.parentElement;
         var siblings = group ? Array.prototype.slice.call(group.querySelectorAll('[data-reveal]')) : [el];
         var i = siblings.indexOf(el);
-        el.style.transitionDelay = (i > 0 ? i * 100 : 0) + 'ms';
+        // Stagger: 80ms per item (smoother than 100ms for 6 stats)
+        el.style.transitionDelay = (i > 0 ? i * 80 : 0) + 'ms';
         el.classList.add('in-view');
         io.unobserve(el);
       });
-    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    }, { threshold: 0.2, rootMargin: '0px 0px -60px 0px' });
 
     items.forEach(function (el) { io.observe(el); });
   }
