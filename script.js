@@ -108,6 +108,9 @@
         if (j === i) dot.setAttribute('aria-current', 'true');
         else dot.removeAttribute('aria-current');
       });
+      // Update arrow button states
+      if (prevBtn) prevBtn.disabled = (i === 0);
+      if (nextBtn) nextBtn.disabled = (i === cards.length - 1);
     }
 
     // Center detection: IntersectionObserver with a zero-height line at
@@ -173,10 +176,11 @@
         dragMoved = true;
         track.style.scrollSnapType = 'none';
         track.style.scrollBehavior = 'auto';
-        track.scrollLeft = startScroll - dx;
+        // Apply momentum damping for smoother feel
+        var scroll = startScroll - dx * 1.2;
+        track.scrollLeft = scroll;
       }
     });
-
     window.addEventListener('pointerup', function () {
       if (!dragging) return;
       dragging = false;

@@ -577,21 +577,23 @@ html:not(.js) .nav-backdrop {
 }
 
 /* --------------------------------------------------------------------------
-   8. Projects slider (structure now; interaction JS in Phase 3)
+   8. Projects slider — refined interaction feel
    -------------------------------------------------------------------------- */
 
 .slider-region {
   position: relative;
+  margin-top: var(--space-8);
 }
 
 .slider-track {
   display: flex;
-  gap: var(--space-5);
+  gap: var(--space-6);
   list-style: none;
-  padding: var(--space-2) var(--padding-page) var(--space-6);
+  padding: var(--space-4) var(--padding-page) var(--space-8);
   margin-inline: calc(var(--padding-page) * -1);
   overflow-x: auto;
   scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--padding-page);
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }
@@ -601,7 +603,7 @@ html:not(.js) .nav-backdrop {
 }
 
 .slider-card {
-  flex: 0 0 86%;
+  flex: 0 0 88%;
   scroll-snap-align: center;
   display: flex;
   flex-direction: column;
@@ -609,25 +611,50 @@ html:not(.js) .nav-backdrop {
   border: 1px solid var(--border-subtle);
   border-radius: 16px;
   overflow: hidden;
-  opacity: 0.6;
-  transition: opacity var(--dur-base) var(--ease-out),
-              transform var(--dur-base) var(--ease-out),
-              border-color var(--dur-base) var(--ease-out);
+  opacity: 0.5;
+  transform: scale(0.96);
+  transition: 
+    opacity 400ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 400ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 300ms ease-out,
+    box-shadow 300ms ease-out;
 }
 
 .slider-card.centered {
   opacity: 1;
+  transform: scale(1);
   border-color: var(--border-strong);
 }
 
+.slider-card:hover {
+  border-color: var(--accent-focus);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
 @media (min-width: 1024px) {
+  .slider-track {
+    gap: var(--space-8);
+    padding-block: var(--space-6) var(--space-10);
+  }
+  
   .slider-card {
-    flex-basis: 38%;
+    flex-basis: 40%;
+    opacity: 0.4;
   }
 
   .slider-card.centered {
-    transform: scale(1.05);
+    transform: scale(1.08);
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.16);
   }
+  
+  .slider-card.centered:hover {
+    box-shadow: 0 20px 56px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.card-media {
+  position: relative;
+  overflow: hidden;
 }
 
 .card-media img {
@@ -635,22 +662,29 @@ html:not(.js) .nav-backdrop {
   aspect-ratio: 16 / 9;
   object-fit: cover;
   background: var(--bg-subtle);
+  transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.slider-card:hover .card-media img {
+  transform: scale(1.05);
 }
 
 .card-body {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  padding: var(--space-5);
+  padding: var(--space-6);
   flex: 1;
 }
 
 .card-title {
   font-size: var(--text-2xl);
+  line-height: var(--leading-tight);
 }
 
 .card-desc {
   color: var(--text-secondary);
+  line-height: 1.5;
 }
 
 .card-metrics {
@@ -658,57 +692,76 @@ html:not(.js) .nav-backdrop {
   padding: 0;
   margin: 0;
   display: grid;
-  gap: var(--space-1);
+  gap: var(--space-2);
   font-size: var(--text-sm);
   color: var(--text-meta);
   line-height: var(--leading-ui);
 }
 
+.card-metrics li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
 .card-metrics li::before {
   content: "•";
-  margin-inline-end: var(--space-2);
-  color: var(--text-meta);
+  color: var(--accent-focus);
+  font-weight: 700;
+  flex-shrink: 0;
 }
 
 .card-link {
   margin-top: auto;
-  padding-top: var(--space-2);
+  padding-top: var(--space-4);
   color: var(--accent-focus);
   font-weight: 500;
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  transition: gap 200ms ease-out;
 }
 
 .card-link:hover {
-  text-decoration: underline;
-  text-underline-offset: 4px;
+  gap: var(--space-2);
 }
 
 .slider-controls {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-4);
-  margin-top: var(--space-2);
+  gap: var(--space-5);
+  margin-top: var(--space-4);
 }
 
 .slider-arrow {
   display: none;
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   border: 1px solid var(--border-strong);
   border-radius: 50%;
   color: var(--text-secondary);
   align-items: center;
   justify-content: center;
-  transition: color var(--dur-fast) var(--ease-out),
-              border-color var(--dur-fast) var(--ease-out),
-              background-color var(--dur-fast) var(--ease-out);
+  background: var(--bg-primary);
+  transition: 
+    color 200ms ease-out,
+    border-color 200ms ease-out,
+    background-color 200ms ease-out,
+    transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.slider-arrow:hover {
+.slider-arrow:hover:not(:disabled) {
   color: var(--text-primary);
-  border-color: var(--text-tertiary);
+  border-color: var(--accent-primary);
   background: var(--bg-elevated);
+  transform: scale(1.08);
+}
+
+.slider-arrow:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
 }
 
 @media (min-width: 768px) {
@@ -721,17 +774,21 @@ html:not(.js) .nav-backdrop {
   display: flex;
   justify-content: center;
   gap: var(--space-2);
-  margin-top: var(--space-4);
   padding: 0;
 }
 
 .slider-dot {
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
+  transition: background-color 200ms ease-out;
+}
+
+.slider-dot:hover {
+  background-color: var(--bg-elevated);
 }
 
 .slider-dot::before {
@@ -740,13 +797,14 @@ html:not(.js) .nav-backdrop {
   height: 8px;
   border-radius: 50%;
   background: var(--border-strong);
-  transition: background-color var(--dur-fast) var(--ease-out),
-              transform var(--dur-fast) var(--ease-out);
+  transition: 
+    background-color 300ms ease-out,
+    transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .slider-dot[aria-current="true"]::before {
   background: var(--accent-primary);
-  transform: scale(1.25);
+  transform: scale(1.4);
 }
 
 @media (min-width: 768px) {
@@ -757,11 +815,13 @@ html:not(.js) .nav-backdrop {
 }
 
 .slider-hint {
-  margin-top: var(--space-2);
+  margin-top: var(--space-3);
   text-align: center;
   font-size: var(--text-xs);
   color: var(--text-meta);
+  font-style: italic;
 }
+
 
 /* --------------------------------------------------------------------------
    9. Quick stats
