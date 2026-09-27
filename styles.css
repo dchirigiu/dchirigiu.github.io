@@ -271,57 +271,81 @@ code, pre, kbd, samp {
 }
 
 /* --------------------------------------------------------------------------
-   5. Hero
+   5. Hero — refined spacing and motion
    -------------------------------------------------------------------------- */
 
 .hero {
+  position: relative;
   min-height: 100vh;
   min-height: 100svh;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: var(--space-10) var(--padding-page);
+}
+
+.hero-content {
+  max-width: 42rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-6);
   text-align: center;
-  padding: var(--space-12) var(--padding-page);
-  gap: var(--space-5);
 }
 
 .hero-mark {
-  width: 48px;
+  width: 56px;
   height: auto;
   color: var(--accent-primary);
+  opacity: 0.95;
 }
 
 .hero-title {
   font-size: var(--text-4xl);
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin: 0;
 }
 
 .hero-subtitle {
   font-size: var(--text-lg);
   font-weight: 400;
-  color: var(--text-secondary);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  line-height: var(--leading-ui);
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  margin: calc(var(--space-2) * -1) 0 0;
 }
 
 .hero-tagline {
   font-size: var(--text-xl);
-  font-weight: 400;
-  max-width: 24em;
   color: var(--text-primary);
-  text-wrap: balance;
+  max-width: 28em;
+  line-height: 1.5;
+  margin-top: var(--space-2);
 }
 
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   gap: var(--space-4);
   margin-top: var(--space-4);
+}
+
+@media (min-width: 768px) {
+  .hero-mark {
+    width: 72px;
+  }
+  
+  .hero-content {
+    gap: var(--space-8);
+  }
+  
+  .hero-tagline {
+    font-size: var(--text-2xl);
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -859,35 +883,57 @@ html.js [data-reveal].in-view {
         session, motion allowed). Without JS: static, always visible.
    -------------------------------------------------------------------------- */
 
-@keyframes hero-fade {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+@keyframes hero-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
-@keyframes hero-rise {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: none; }
+@keyframes hero-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
+@keyframes hero-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Staggered entrance: mark → title → subtitle → tagline → actions */
 html.intro-play .hero-mark {
   opacity: 0;
-  animation: hero-fade var(--dur-reveal) var(--ease-spring) 300ms both;
+  animation: hero-scale-in 900ms cubic-bezier(0.34, 1.56, 0.64, 1) 200ms both;
 }
 
 html.intro-play .hero-title {
-  animation: hero-rise var(--dur-slow) var(--ease-out) 500ms both;
+  animation: hero-rise-in 650ms cubic-bezier(0.16, 1, 0.3, 1) 600ms both;
 }
 
 html.intro-play .hero-subtitle {
-  animation: hero-fade var(--dur-base) var(--ease-out) 700ms both;
+  animation: hero-fade-in 500ms ease-out 850ms both;
 }
 
 html.intro-play .hero-tagline {
-  animation: hero-fade var(--dur-base) var(--ease-out) 900ms both;
+  animation: hero-fade-in 500ms ease-out 1050ms both;
 }
 
 html.intro-play .hero-actions {
-  animation: hero-fade var(--dur-fast) var(--ease-out) 1100ms both;
+  animation: hero-rise-in 450ms ease-out 1300ms both;
 }
 
 /* --------------------------------------------------------------------------
