@@ -1,393 +1,249 @@
-/* Daniel Chirigiu — Portfolio
-   Vanilla JS, no libraries. Loaded with `defer`.
-   Progressive enhancement: every feature no-ops gracefully without it. */
+/* ================================================
+   PRELOADER & INTRO LOGIC
+   ================================================ */
 
-(function () {
+(function() {
   'use strict';
-
-  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-  /* ------------------------------------------------------------------
-     Mobile menu (spec §2.6): slide-in overlay, Escape/backdrop close
-     ------------------------------------------------------------------ */
-  function initMenu() {
-    var toggle = document.querySelector('.menu-toggle');
-    var backdrop = document.querySelector('.nav-backdrop');
-    var nav = document.getElementById('nav-list');
-    if (!toggle || !nav) return;
-
-    if (backdrop) backdrop.hidden = false;
-
-    function setOpen(open) {
-      document.body.classList.toggle('menu-open', open);
-      toggle.setAttribute('aria-expanded', String(open));
-      toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-      if (open) {
-        var first = nav.querySelector('a');
-        if (first) first.focus();
-      } else {
-        toggle.focus();
+  
+  const preloader = document.getElementById('preloader');
+  const preloaderNumber = document.querySelector('#preloader-number div');
+  
+  // Simulate loading progress
+  let progress = 0;
+  const duration = 2000; // 2 seconds total
+  const interval = 20; // Update every 20ms
+  const steps = duration / interval;
+  const increment = 100 / steps;
+  
+  const shouldShowIntro = document.documentElement.classList.contains('intro-play');
+  
+  if (shouldShowIntro) {
+    const progressInterval = setInterval(() => {
+      progress += increment;
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(progressInterval);
+        setTimeout(hidePreloader, 400);
       }
-    }
-
-    toggle.addEventListener('click', function () {
-      setOpen(!document.body.classList.contains('menu-open'));
-    });
-
-    if (backdrop) {
-      backdrop.addEventListener('click', function () { setOpen(false); });
-    }
-
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && document.body.classList.contains('menu-open')) {
-        setOpen(false);
-      }
-    });
-
-    // Close when a nav link is chosen (same-page anchors included)
-    nav.addEventListener('click', function (e) {
-      if (e.target.closest('a') && window.innerWidth < 900) setOpen(false);
-    });
-
-    // Reset state when crossing the desktop breakpoint
-    window.matchMedia('(min-width: 900px)').addEventListener('change', function (e) {
-      if (e.matches && document.body.classList.contains('menu-open')) {
-        document.body.classList.remove('menu-open');
-        toggle.setAttribute('aria-expanded', 'false');
-      }
-    });
+      preloaderNumber.textContent = Math.round(progress) + '%';
+    }, interval);
+  } else {
+    // Skip intro if already seen
+    preloader.style.display = 'none';
   }
-
-  /* ------------------------------------------------------------------
-     Featured projects slider (spec §2.1, §3.3)
-     CSS scroll-snap does the physics; JS adds centering detection,
-     dots, arrows, keyboard and mouse-drag support. No libraries.
-     ------------------------------------------------------------------ */
-  function initSlider() {
-    var track = document.getElementById('slider-track');
-    if (!track) return;
-
-    var cards = Array.prototype.slice.call(track.querySelectorAll('.slider-card'));
-    var dots = Array.prototype.slice.call(document.querySelectorAll('.slider-dot'));
-    var prevBtn = document.querySelector('.slider-prev');
-    var nextBtn = document.querySelector('.slider-next');
-    var current = 0;
-    var raf = null;
-
-    function centerOf(el) {
-      return el.offsetLeft + el.offsetWidth / 2;
-    }
-
-    function indexFromScroll() {
-      var target = track.scrollLeft + track.clientWidth / 2;
-      var best = 0, bestDist = Infinity;
-      cards.forEach(function (card, i) {
-        var d = Math.abs(centerOf(card) - target);
-        if (d < bestDist) { bestDist = d; best = i; }
+  
+  function hidePreloader() {
+    preloader.classList.add('preloader-exit');
+    sessionStorage.setItem('intro-seen', 'true');
+    setTimeout(() => {
+      preloader.style.display = 'none';
+      initScrollReveal();
+    }, 800);
+  }
+  
+  // If intro is skipped, init immediately
+  if (!shouldShowIntro) {
+    initScrollReveal();
+  }
+  
+  /* ================================================
+     SCROLL-TRIGGERED REVEAL
+     ================================================ */
+  
+  function initScrollReveal() {
+    const reveals = document.querySelectorAll('.reveal');
+    
+    if (!reveals.length) return;
+    
+    const observerOptions = {
+      threshold: 0.15,
+      rootMargin: '0px 0px -10% 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+          observer.unobserve(entry.target);
+        }
       });
-      return best;
+    }, observerOptions);
+    
+    reveals.forEach(el => observer.observe(el));
+  }
+  
+  /* ================================================
+     SLIDER LOGIC
+     ================================================ */
+  
+  const slider = document.getElementById('slider');
+  const dots = document.querySelectorAll('.dot');
+  const prevBtn = document.querySelector('.slider-arrow.prev');
+  const nextBtn = document.querySelector('.slider-arrow.next');
+  
+  if (slider && dots.length > 0) {
+    let currentIndex = 0;
+    const cards = slider.querySelectorAll('.project-card');
+    const totalCards = cards.length;
+    
+    // Scroll to card
+    function scrollToCard(index) {
+      if (index < 0) index = 0;
+      if (index >= totalCards) index = totalCards - 1;
+      
+      currentIndex = index;
+      
+      const card = cards[index];
+      const scrollLeft = card.offsetLeft - (slider.offsetWidth / 2) + (card.offsetWidth / 2);
+      
+      slider.scrollTo({
+        left: scrollLeft,
+        behavior: 'smooth'
+      });
+      
+      updateDots();
     }
-
-    function scrollToCard(i, instant) {
-      i = Math.max(0, Math.min(cards.length - 1, i));
-      var card = cards[i];
-      var left = card.offsetLeft - (track.clientWidth - card.offsetWidth) / 2;
-      track.scrollTo({
-        left: left,
-        behavior: instant || reduceMotion.matches ? 'auto' : 'smooth'
+    
+    // Update dot indicators
+    function updateDots() {
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentIndex);
       });
     }
-
-    function setActive(i, fromScroll) {
-      if (i === current && fromScroll) { /* still update on first run */ }
-      current = i;
-      cards.forEach(function (card, j) {
-        card.classList.toggle('centered', j === i);
+    
+    // Navigation buttons
+    prevBtn?.addEventListener('click', () => {
+      scrollToCard(currentIndex - 1);
+    });
+    
+    nextBtn?.addEventListener('click', () => {
+      scrollToCard(currentIndex + 1);
+    });
+    
+    // Dot navigation
+    dots.forEach((dot, i) => {
+      dot.addEventListener('click', () => {
+        scrollToCard(i);
       });
-      dots.forEach(function (dot, j) {
-        if (j === i) dot.setAttribute('aria-current', 'true');
-        else dot.removeAttribute('aria-current');
-      });
-      // Update arrow button states
-      if (prevBtn) prevBtn.disabled = (i === 0);
-      if (nextBtn) nextBtn.disabled = (i === cards.length - 1);
-    }
-
-    // Center detection: IntersectionObserver with a zero-height line at
-    // the track's horizontal center (spec §3.3). Fallback rAF check on
-    // scroll keeps state exact for programmatic + drag scrolls.
-    if ('IntersectionObserver' in window) {
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) {
-            setActive(cards.indexOf(entry.target), true);
+    });
+    
+    // Keyboard navigation
+    slider.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        scrollToCard(currentIndex - 1);
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        scrollToCard(currentIndex + 1);
+      }
+    });
+    
+    // Detect scroll position for dots
+    let scrollTimeout;
+    slider.addEventListener('scroll', () => {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        const scrollCenter = slider.scrollLeft + slider.offsetWidth / 2;
+        
+        cards.forEach((card, i) => {
+          const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+          const distance = Math.abs(scrollCenter - cardCenter);
+          
+          if (distance < card.offsetWidth / 2) {
+            if (currentIndex !== i) {
+              currentIndex = i;
+              updateDots();
+            }
           }
         });
-      }, {
-        root: track,
-        rootMargin: '0% -50% 0% -50%',
-        threshold: 0
-      });
-      cards.forEach(function (card) { io.observe(card); });
-    }
-
-    track.addEventListener('scroll', function () {
-      if (raf) return;
-      raf = window.requestAnimationFrame(function () {
-        raf = null;
-        setActive(indexFromScroll(), true);
-      });
-    }, { passive: true });
-
-    if (prevBtn) prevBtn.addEventListener('click', function () { scrollToCard(current - 1); });
-    if (nextBtn) nextBtn.addEventListener('click', function () { scrollToCard(current + 1); });
-
-    dots.forEach(function (dot, i) {
-      dot.addEventListener('click', function () { scrollToCard(i); });
+      }, 100);
     });
-
-    // Keyboard: arrows navigate when focus is inside the slider
-    var region = track.closest('section');
-    if (region) {
-      region.addEventListener('keydown', function (e) {
-        if (e.key === 'ArrowLeft') { e.preventDefault(); scrollToCard(current - 1); }
-        if (e.key === 'ArrowRight') { e.preventDefault(); scrollToCard(current + 1); }
-      });
-    }
-
-    // Mouse drag (desktop). Touch uses native momentum scrolling.
-    var dragging = false;
-    var dragMoved = false;
-    var startX = 0;
-    var startScroll = 0;
-
-    track.addEventListener('pointerdown', function (e) {
-      if (e.pointerType !== 'mouse' || e.button !== 0) return;
-      dragging = true;
-      dragMoved = false;
-      startX = e.clientX;
-      startScroll = track.scrollLeft;
+    
+    // Touch/drag support with momentum
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+    let velocity = 0;
+    let lastX = 0;
+    let lastTime = Date.now();
+    
+    slider.addEventListener('mousedown', (e) => {
+      isDown = true;
+      slider.style.cursor = 'grabbing';
+      slider.style.scrollBehavior = 'auto';
+      startX = e.pageX - slider.offsetLeft;
+      scrollLeft = slider.scrollLeft;
+      velocity = 0;
+      lastX = e.pageX;
+      lastTime = Date.now();
     });
-
-    window.addEventListener('pointermove', function (e) {
-      if (!dragging) return;
-      var dx = e.clientX - startX;
-      if (Math.abs(dx) > 4) {
-        dragMoved = true;
-        track.style.scrollSnapType = 'none';
-        track.style.scrollBehavior = 'auto';
-        // Apply momentum damping for smoother feel
-        var scroll = startScroll - dx * 1.2;
-        track.scrollLeft = scroll;
-      }
+    
+    slider.addEventListener('mouseleave', () => {
+      isDown = false;
+      slider.style.cursor = 'grab';
+      slider.style.scrollBehavior = 'smooth';
     });
-    window.addEventListener('pointerup', function () {
-      if (!dragging) return;
-      dragging = false;
-      track.style.scrollSnapType = '';
-      track.style.scrollBehavior = '';
-      if (dragMoved) scrollToCard(indexFromScroll());
-    });
-
-    // Suppress link clicks after a drag gesture
-    track.addEventListener('click', function (e) {
-      if (dragMoved) {
-        e.preventDefault();
-        e.stopPropagation();
-        dragMoved = false;
-      }
-    }, true);
-
-    // Initial state: center the featured card (JARVIS, index 1)
-    scrollToCard(1, true);
-    setActive(1, false);
-  }
-
-  /* ------------------------------------------------------------------
-     Scroll reveal (spec §2.1 Quick Stats): fade-up with stagger
-     ------------------------------------------------------------------ */
-  function initReveal() {
-    var items = Array.prototype.slice.call(document.querySelectorAll('[data-reveal]'));
-    if (!items.length) return;
-
-    if (reduceMotion.matches || !('IntersectionObserver' in window)) {
-      items.forEach(function (el) { el.classList.add('in-view'); });
-      return;
-    }
-
-    var io = new IntersectionObserver(function (entries) {
-      entries.forEach(function (entry) {
-        if (!entry.isIntersecting) return;
-        var el = entry.target;
-        var group = el.parentElement;
-        var siblings = group ? Array.prototype.slice.call(group.querySelectorAll('[data-reveal]')) : [el];
-        var i = siblings.indexOf(el);
-        // Stagger: 80ms per item (smoother than 100ms for 6 stats)
-        el.style.transitionDelay = (i > 0 ? i * 80 : 0) + 'ms';
-        el.classList.add('in-view');
-        io.unobserve(el);
-      });
-    }, { threshold: 0.2, rootMargin: '0px 0px -60px 0px' });
-
-    items.forEach(function (el) { io.observe(el); });
-  }
-
-  /* ------------------------------------------------------------------
-     Theme toggle (spec §1.1, §5.2 Phase 5): light vars already exist
-     in CSS; JS swaps data-theme, persists explicit choice, and follows
-     system changes only while no explicit choice is stored.
-     ------------------------------------------------------------------ */
-  function initTheme() {
-    var btn = document.querySelector('.theme-toggle');
-    var root = document.documentElement;
-    var metaDark = document.querySelector('meta[name="theme-color"][media*="dark"]');
-    var metaLight = document.querySelector('meta[name="theme-color"][media*="light"]');
-
-    function apply(theme) {
-      root.dataset.theme = theme;
-      if (metaDark) metaDark.content = theme === 'dark' ? '#0a0a0c' : '#faf9f7';
-      if (metaLight) metaLight.content = theme === 'dark' ? '#0a0a0c' : '#faf9f7';
-      if (btn) btn.setAttribute('aria-label', theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
-    }
-
-    if (btn) {
-      apply(root.dataset.theme);
-      btn.addEventListener('click', function () {
-        var next = root.dataset.theme === 'dark' ? 'light' : 'dark';
-        apply(next);
-        try { localStorage.setItem('theme', next); } catch (err) {}
-      });
-    }
-
-    // Follow the system only while the visitor hasn't chosen explicitly
-    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', function (e) {
-      var explicit = null;
-      try { explicit = localStorage.getItem('theme'); } catch (err) {}
-      if (!explicit) apply(e.matches ? 'light' : 'dark');
-    });
-  }
-
-  /* ------------------------------------------------------------------
-     Copy to clipboard (contact page, arch diagram) with toast status
-     ------------------------------------------------------------------ */
-  function initCopy() {
-    var toast = document.querySelector('.toast');
-    var toastTimer = null;
-
-    function showToast(message, kind) {
-      if (!toast) return;
-      toast.hidden = false;
-      toast.textContent = message;
-      toast.classList.remove('success', 'error');
-      if (kind) toast.classList.add(kind);
-      toast.classList.add('visible');
-      clearTimeout(toastTimer);
-      toastTimer = window.setTimeout(function () {
-        toast.classList.remove('visible');
-      }, 2000);
-    }
-
-    function copyText(text, okMessage) {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(function () {
-          showToast(okMessage, 'success');
-        }, function () {
-          showToast('Copy failed — please copy manually.', 'error');
+    
+    slider.addEventListener('mouseup', () => {
+      isDown = false;
+      slider.style.cursor = 'grab';
+      slider.style.scrollBehavior = 'smooth';
+      
+      // Apply momentum
+      if (Math.abs(velocity) > 2) {
+        const momentum = velocity * 8;
+        slider.scrollBy({
+          left: momentum,
+          behavior: 'smooth'
         });
-      } else {
-        showToast('Copy not supported in this browser.', 'error');
-      }
-    }
-
-    document.querySelectorAll('[data-copy-email]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        copyText(btn.getAttribute('data-copy-email'), 'Email copied!');
-      });
-    });
-
-    document.querySelectorAll('[data-copy-target]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var el = document.querySelector(btn.getAttribute('data-copy-target'));
-        if (el) copyText(el.textContent, 'Copied!');
-      });
-    });
-  }
-
-  /* ------------------------------------------------------------------
-     Back to top (spec §2.2: visible after 2 viewports on jarvis page)
-     ------------------------------------------------------------------ */
-  function initBackToTop() {
-    var btn = document.querySelector('.back-to-top');
-    if (!btn) return;
-
-    var ticking = false;
-    window.addEventListener('scroll', function () {
-      if (ticking) return;
-      ticking = true;
-      window.requestAnimationFrame(function () {
-        ticking = false;
-        btn.classList.toggle('visible', window.scrollY > window.innerHeight * 2);
-      });
-    }, { passive: true });
-
-    btn.addEventListener('click', function () {
-      window.scrollTo({ top: 0, behavior: reduceMotion.matches ? 'auto' : 'smooth' });
-    });
-  }
-
-  /* ------------------------------------------------------------------
-     Image loading state (Phase 9): skeleton pulse runs until load
-     ------------------------------------------------------------------ */
-  function initImageSkeletons() {
-    document.querySelectorAll('img[loading="lazy"]').forEach(function (img) {
-      function done() { img.classList.add('loaded'); }
-      if (img.complete && img.naturalWidth > 0) {
-        done();
-      } else {
-        img.addEventListener('load', done, { once: true });
-        img.addEventListener('error', done, { once: true });
       }
     });
+    
+    slider.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - slider.offsetLeft;
+      const walk = (x - startX) * 1.5;
+      slider.scrollLeft = scrollLeft - walk;
+      
+      // Calculate velocity
+      const now = Date.now();
+      const dt = now - lastTime;
+      if (dt > 0) {
+        velocity = (e.pageX - lastX) / dt;
+      }
+      lastX = e.pageX;
+      lastTime = now;
+    });
+    
+    // Initialize
+    updateDots();
+    slider.style.cursor = 'grab';
   }
-
-  function init() {
-    initIntro();
-    initTheme();
-    initMenu();
-    initSlider();
-    initReveal();
-    initCopy();
-    initBackToTop();
-    initImageSkeletons();
-  }
-
-  /* ------------------------------------------------------------------
-     Intro sequencer (spec §3.2): the timeline itself is pure CSS
-     (html.intro-play). JS only records that it played.
-     ------------------------------------------------------------------ */
-  function initIntro() {
-    if (!document.documentElement.classList.contains('intro-play')) return;
-    var title = document.querySelector('.hero-title');
-    if (!title) return;
-    title.addEventListener('animationend', function (e) {
-      if (e.animationName === 'hero-rise') {
-        try { sessionStorage.setItem('intro-seen', '1'); } catch (err) {}
+  
+  /* ================================================
+     SMOOTH SCROLL FOR ANCHOR LINKS
+     ================================================ */
+  
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      const href = this.getAttribute('href');
+      if (href === '#' || href === '#main') return;
+      
+      e.preventDefault();
+      const target = document.querySelector(href);
+      
+      if (target) {
+        const headerOffset = 100;
+        const elementPosition = target.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: 'smooth'
+        });
       }
     });
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-
-  // Service worker (skip on non-secure origins)
-  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
-    window.addEventListener('load', function () {
-      navigator.serviceWorker.register('/sw.js').catch(function () {
-        /* offline support is progressive enhancement */
-      });
-    });
-  }
+  });
+  
 })();

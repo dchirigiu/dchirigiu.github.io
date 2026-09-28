@@ -4,7 +4,7 @@
    - Video: network-only, never cached (user-initiated, ~MBs)
 */
 
-const CACHE_NAME = 'portfolio-v2';
+const CACHE_NAME = 'portfolio-v3';
 
 const STATIC_ASSETS = [
   '/',
