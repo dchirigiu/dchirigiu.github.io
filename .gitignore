@@ -2,3 +2,5 @@ lighthouse.*
 C:\
 .DS_Store
 *.log
+# Agent config stays local: Pages serves committed dotfiles publicly
+.omp/

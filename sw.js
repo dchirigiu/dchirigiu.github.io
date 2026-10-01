@@ -4,7 +4,7 @@
    - Video: network-only, never cached (user-initiated, ~MBs)
 */
 
-const CACHE_NAME = 'portfolio-v3';
+const CACHE_NAME = 'portfolio-v4';
 
 const STATIC_ASSETS = [
   '/',
@@ -62,8 +62,12 @@ self.addEventListener('fetch', (e) => {
       caches.match(e.request).then((cached) => {
         if (cached) return cached;
         return fetch(e.request).then((response) => {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
+          // Cache only successful responses: a stored 404 would be served
+          // from cache until the next CACHE_NAME bump.
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
+          }
           return response;
         });
       })
@@ -75,8 +79,10 @@ self.addEventListener('fetch', (e) => {
   e.respondWith(
     fetch(e.request)
       .then((response) => {
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
+        if (response.ok) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
+        }
         return response;
       })
       .catch(() => caches.match(e.request))
